@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amazing Creatures - Kids Learning App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap');
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    .font-fun {
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .bounce-hover:hover {
+      transform: scale(1.05) rotate(-2deg);
+    }
+
+    .card-shadow {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes pulse-slow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .animate-pulse-slow {
+      animation: pulse-slow 2s infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+
+    .animate-shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4ade80;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="p-2 sm:p-4 text-slate-800 flex flex-col justify-between min-h-screen">
+
+  <!-- TOP BAR: Navigation & Score -->
+  <header class="bg-white/90 backdrop-blur-md rounded-3xl p-4 mb-4 shadow-lg border-4 border-yellow-300 flex flex-wrap justify-between items-center max-w-4xl mx-auto w-full gap-2">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl animate-bounce">🦁</span>
+      <div>
+        <h1 class="font-fun text-xl sm:text-2xl text-emerald-600 leading-none">Amazing Creatures</h1>
+        <p class="text-xs text-slate-500 font-bold">Unit 5: Superlatives & Animals</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="flex items-center gap-3 sm:gap-6 bg-yellow-100 px-4 py-2 rounded-2xl border-2 border-yellow-400">
+      <div class="flex items-center gap-1">
+        <span class="text-2xl text-amber-500">⭐</span>
+        <span id="star-count" class="font-fun text-xl sm:text-2xl text-amber-600">0</span>
+      </div>
+      <div class="flex items-center gap-1">
+        <span class="text-2xl">🍬</span>
+        <span id="candy-count" class="font-fun text-xl sm:text-2xl text-pink-500">0</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-4xl mx-auto w-full flex-grow flex flex-col justify-center">
+
+    <!-- WELCOME / MENU SCREEN -->
+    <section id="screen-menu" class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border-4 border-emerald-400 text-center relative overflow-hidden">
+      <div class="absolute -top-10 -left-10 text-8xl opacity-20">🦥</div>
+      <div class="absolute -bottom-10 -right-10 text-8xl opacity-20">🐳</div>
+
+      <span class="inline-block bg-emerald-100 text-emerald-700 font-bold px-4 py-1 rounded-full text-sm mb-2">Kids Level 1</span>
+      <h2 class="font-fun text-3xl sm:text-5xl text-emerald-600 mb-4">Welcome Little Explorer! 🌿</h2>
+      <p class="text-base sm:text-lg text-slate-600 mb-8 max-w-lg mx-auto">
+        Learn superlatives, discover amazing animals, earn sweet candies, and unlock the <strong>Candy Carnival</strong>!
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <button onclick="app.startSection(1)" class="bounce-hover transition-all bg-gradient-to-b from-amber-300 to-amber-500 text-amber-950 p-5 rounded-3xl border-b-8 border-amber-600 font-fun text-lg sm:text-xl flex flex-col items-center gap-2 shadow-lg">
+          <span class="text-5xl">🦒</span>
+          <span>1. Animal Quiz</span>
+          <span class="text-xs font-sans bg-amber-100 px-3 py-1 rounded-full font-bold">5 Items • ⭐</span>
+        </button>
+
+        <button onclick="app.startSection(2)" class="bounce-hover transition-all bg-gradient-to-b from-sky-300 to-sky-500 text-sky-950 p-5 rounded-3xl border-b-8 border-sky-600 font-fun text-lg sm:text-xl flex flex-col items-center gap-2 shadow-lg">
+          <span class="text-5xl">🧩</span>
+          <span>2. Sentence Builder</span>
+          <span class="text-xs font-sans bg-sky-100 px-3 py-1 rounded-full font-bold">5 Items • ⭐</span>
+        </button>
+
+        <button onclick="app.startSection(3)" class="bounce-hover transition-all bg-gradient-to-b from-purple-300 to-purple-500 text-purple-950 p-5 rounded-3xl border-b-8 border-purple-600 font-fun text-lg sm:text-xl flex flex-col items-center gap-2 shadow-lg">
+          <span class="text-5xl">🎁</span>
+          <span>3. Sensory Box</span>
+          <span class="text-xs font-sans bg-purple-100 px-3 py-1 rounded-full font-bold">5 Items • 🍬</span>
+        </button>
+      </div>
+
+      <!-- NEW SECTION 4 BUTTON -->
+      <div class="mb-6">
+        <button onclick="app.startSection(4)" class="w-full bounce-hover transition-all bg-gradient-to-r from-emerald-300 via-teal-400 to-cyan-400 text-teal-950 p-5 rounded-3xl border-b-8 border-teal-600 font-fun text-xl sm:text-2xl flex items-center justify-center gap-4 shadow-lg">
+          <span class="text-5xl">⌨️</span>
+          <div class="text-left">
+            <div>4. Type & Create Sentences</div>
+            <div class="text-xs font-sans font-bold text-teal-900 bg-white/60 px-3 py-0.5 rounded-full inline-block">5 Typing Items • Write Positive & Negative Sentences ⭐</div>
+          </div>
+        </button>
+      </div>
+
+      <button id="btn-carnival-unlock" onclick="app.showCarnival()" class="w-full bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-white font-fun text-2xl py-4 rounded-2xl border-b-8 border-pink-600 shadow-xl opacity-50 cursor-not-allowed transition-all" disabled>
+        🔒 Unlocks at 15 Stars: Candy Carnival! 🎉
+      </button>
+    </section>
+
+    <!-- SECTION 1: QUIZ -->
+    <section id="screen-quiz" class="hidden bg-white rounded-3xl p-6 sm:p-8 card-shadow border-4 border-amber-400 text-center">
+      <div class="flex justify-between items-center mb-4">
+        <span class="font-fun text-amber-600 text-xl">Section 1: Superlative Quiz 🦒</span>
+        <span id="quiz-progress" class="font-bold text-slate-400 text-sm">Question 1 / 4</span>
+      </div>
+
+      <h3 id="quiz-question" class="font-fun text-2xl sm:text-3xl text-slate-700 mb-6 min-h-[60px] flex items-center justify-center">
+        Which animal is the fastest?
+      </h3>
+
+      <div id="quiz-options" class="grid grid-cols-2 gap-4 mb-6">
+        <!-- Dynamic Options -->
+      </div>
+
+      <div id="quiz-feedback" class="h-10 font-bold text-lg mb-4 flex items-center justify-center"></div>
+
+      <button onclick="app.showMenu()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2 rounded-2xl transition">
+        ⬅ Back to Menu
+      </button>
+    </section>
+
+    <!-- SECTION 2: SENTENCE BUILDER -->
+    <section id="screen-builder" class="hidden bg-white rounded-3xl p-6 sm:p-8 card-shadow border-4 border-sky-400 text-center">
+      <div class="flex justify-between items-center mb-4">
+        <span class="font-fun text-sky-600 text-xl">Section 2: Sentence Builder 🧩</span>
+        <span id="builder-progress" class="font-bold text-slate-400 text-sm">Sentence 1 / 3</span>
+      </div>
+
+      <div id="builder-image" class="text-6xl sm:text-7xl mb-4 animate-bounce">🦥</div>
+      <p class="text-sm font-bold text-slate-400 mb-2">Tap words in the correct order:</p>
+
+      <!-- Sentence Target Slot Area -->
+      <div id="sensory-boxes-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+        <!-- 5 Mystery Boxes -->
+      </div>
+
+      <!-- Challenge Modal/Area -->
+      <div id="sensory-challenge" class="hidden bg-purple-50 p-6 rounded-3xl border-2 border-purple-300 mb-6">
+        <div id="sensory-revealed-animal" class="text-7xl mb-2 animate-bounce"></div>
+        <h4 id="sensory-challenge-title" class="font-fun text-2xl text-purple-700 mb-4">You found a Tiger!</h4>
+        <p id="sensory-challenge-q" class="font-bold text-slate-700 mb-4">What does it look like?</p>
+        <div id="sensory-challenge-opts" class="flex flex-wrap justify-center gap-3">
+          <!-- Challenge options -->
+        </div>
+      </div>
+
+      <div id="sensory-feedback" class="h-10 font-bold text-lg mb-4 flex items-center justify-center"></div>
+
+      <button onclick="app.showMenu()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2 rounded-2xl transition">
+        ⬅ Back to Menu
+      </button>
+    </section>
+
+    <!-- SECTION 4: TYPE & CREATE (NEW SECTION) -->
+    <section id="screen-typing" class="hidden bg-white rounded-3xl p-6 sm:p-8 card-shadow border-4 border-teal-400 text-center">
+      <div class="flex justify-between items-center mb-4">
+        <span class="font-fun text-teal-600 text-xl">Section 4: Type & Create Sentences ⌨️</span>
+        <span id="typing-progress" class="font-bold text-slate-400 text-sm">Sentence 1 / 5</span>
+      </div>
+
+      <div id="typing-prompt-emoji" class="text-6xl sm:text-7xl mb-2 animate-bounce">🦥</div>
+      <h3 id="typing-prompt-title" class="font-fun text-2xl sm:text-3xl text-teal-700 mb-2">Write a sentence about the sloth!</h3>
+      <p id="typing-prompt-hint" class="text-xs sm:text-sm text-slate-500 font-bold mb-4 bg-teal-50 py-2 px-4 rounded-xl border border-teal-200 inline-block">
+        Hint: Use "is the slowest" or "is not the fastest"
+      </p>
+
+      <div class="max-w-md mx-auto mb-4">
+        <input type="text" id="typing-input" placeholder="Type your sentence here..." 
+               class="w-full text-center font-bold text-lg sm:text-xl p-4 rounded-2xl border-4 border-teal-300 focus:border-teal-500 focus:outline-none shadow-inner mb-3">
+        <div class="flex justify-center gap-3">
+          <button onclick="app.checkTypingSentence()" class="bg-teal-500 hover:bg-teal-600 text-white font-fun text-xl px-8 py-3 rounded-2xl border-b-4 border-teal-700 shadow-lg transition">
+            Check & Submit 🚀
+          </button>
+        </div>
+      </div>
+
+      <div id="typing-feedback" class="h-12 font-bold text-lg mb-4 flex items-center justify-center"></div>
+
+      <button onclick="app.showMenu()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2 rounded-2xl transition">
+        ⬅ Back to Menu
+      </button>
+    </section>
+
+    <!-- CANDY CARNIVAL CELEBRATION -->
+    <section id="screen-carnival" class="hidden bg-gradient-to-b from-pink-300 via-purple-300 to-indigo-300 rounded-3xl p-6 sm:p-10 card-shadow border-8 border-yellow-300 text-center relative overflow-hidden">
+      <div class="text-7xl mb-2 animate-bounce">🍭 🎡 🍬</div>
+      <h2 class="font-fun text-4xl sm:text-6xl text-white drop-shadow-md mb-2">CANDY CARNIVAL!</h2>
+      <p class="text-xl text-yellow-100 font-bold mb-6">Congratulations Superstar! You completed Unit 5!</p>
+
+      <div class="bg-white/90 backdrop-blur rounded-3xl p-6 max-w-md mx-auto mb-6 shadow-xl">
+        <h3 class="font-fun text-2xl text-purple-700 mb-4">Your Final Rewards:</h3>
+        <div class="flex justify-around items-center mb-4">
+          <div class="text-center">
+            <span class="text-5xl block mb-1">⭐</span>
+            <span id="carnival-stars" class="font-fun text-3xl text-amber-500">6</span>
+            <span class="block text-xs font-bold text-slate-400">Stars Earned</span>
+          </div>
+          <div class="text-center">
+            <span class="text-5xl block mb-1">🍬</span>
+            <span id="carnival-candies" class="font-fun text-3xl text-pink-500">4</span>
+            <span class="block text-xs font-bold text-slate-400">Candies Collected</span>
+          </div>
+        </div>
+        <p class="text-sm font-bold text-emerald-600 bg-emerald-100 py-2 rounded-xl">
+          Badge Unlocked: 🏅 Master Animal Explorer!
+        </p>
+      </div>
+
+      <div class="flex justify-center gap-4">
+        <button onclick="confetti({particleCount: 100, spread: 70, origin: {y: 0.6}})" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-950 font-fun text-xl px-6 py-3 rounded-2xl border-b-4 border-yellow-600 shadow-lg">
+          🎉 More Confetti!
+        </button>
+        <button onclick="app.showMenu()" class="bg-white hover:bg-slate-100 text-purple-700 font-fun text-xl px-6 py-3 rounded-2xl border-b-4 border-purple-300 shadow-lg">
+          🏠 Play Again
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-4 text-center text-xs text-emerald-900 font-bold opacity-80">
+    Unit 5: Amazing Creatures • Superlatives & Animal Vocabulary App
+  </footer>
+
+  <!-- SOUND SYNTHESIZER & APP LOGIC -->
+  <script>
+    // Audio FX using Web Audio API
+    class SoundFX {
+      constructor() {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      playSuccess() {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      }
+
+      playWrong() {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(180, now + 0.15);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      }
+
+      playPop() {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+    }
+
+    const sound = new SoundFX();
+
+    // App State & Data
+    class App {
+      constructor() {
+        this.stars = 0;
+        this.candies = 0;
+
+        // Quiz Data - 5 ITEMS
+        this.quizQuestions = [
+          {
+            q: "Which animal is the FASTEST on land?",
+            opts: [
+              { label: "Cheetah 🐆", correct: true },
+              { label: "Sloth 🦥", correct: false },
+              { label: "Giraffe 🦒", correct: false },
+              { label: "Elephant 🐘", correct: false }
+            ]
+          },
+          {
+            q: "Which animal is the SLOWEST creature?",
+            opts: [
+              { label: "Cheetah 🐆", correct: false },
+              { label: "Sloth 🦥", correct: true },
+              { label: "Tiger 🐅", correct: false },
+              { label: "Lion 🦁", correct: false }
+            ]
+          },
+          {
+            q: "Which animal is the BIGGEST in the ocean?",
+            opts: [
+              { label: "Dolphin 🐬", correct: false },
+              { label: "Shark 🦈", correct: false },
+              { label: "Blue Whale 🐳", correct: true },
+              { label: "Fish 🐟", correct: false }
+            ]
+          },
+          {
+            q: "Which animal is the TALLEST on land?",
+            opts: [
+              { label: "Giraffe 🦒", correct: true },
+              { label: "Monkey 🐒", correct: false },
+              { label: "Zebra 🦓", correct: false },
+              { label: "Sloth 🦥", correct: false }
+            ]
+          },
+          {
+            q: "Which animal looks like the SCARIEST predator?",
+            opts: [
+              { label: "Rabbit 🐰", correct: false },
+              { label: "Tiger 🐅", correct: true },
+              { label: "Koala 🐨", correct: false },
+              { label: "Cat 🐱", correct: false }
+            ]
+          }
+        ];
+        this.quizIdx = 0;
+
+        // Sentence Builder Data - 5 ITEMS
+        this.builderSentences = [
+          {
+            emoji: "🦥",
+            target: ["Sloths", "are", "the", "slowest", "animals."],
+          },
+          {
+            emoji: "🐅",
+            target: ["What", "is", "that?", "It", "looks", "like", "a", "tiger."],
+          },
+          {
+            emoji: "🐳",
+            target: ["The", "blue", "whale", "is", "the", "biggest."],
+          },
+          {
+            emoji: "🦒",
+            target: ["The", "giraffe", "is", "the", "tallest", "animal."],
+          },
+          {
+            emoji: "🐆",
+            target: ["Cheetahs", "are", "the", "fastest", "runners."],
+          }
+        ];
+        this.builderIdx = 0;
+        this.builderCurrentWords = [];
+
+        // Sensory Boxes Data - 5 ITEMS
+        this.sensoryBoxes = [
+          { id: 1, animal: "Tiger 🐅", q: "What is that?", ans: "It looks like a tiger.", opts: ["It looks like a tiger.", "It is a sloth."] },
+          { id: 2, animal: "Giraffe 🦒", q: "Is it tall?", ans: "It is the tallest animal!", opts: ["It is the tallest animal!", "It lives in the sea."] },
+          { id: 3, animal: "Blue Whale 🐳", q: "Where does it live?", ans: "It lives in the ocean.", opts: ["It lives in the ocean.", "It flies in the sky."] },
+          { id: 4, animal: "Sloth 🦥", q: "How does it move?", ans: "It is the slowest!", opts: ["It is the slowest!", "It runs fast."] },
+          { id: 5, animal: "Cheetah 🐆", q: "How fast is it?", ans: "It is the fastest runner!", opts: ["It is the fastest runner!", "It sleeps all day."] }
+        ];
+        this.openedBoxes = new Set();
+
+        // Typing / Creating Data - 5 ITEMS
+        this.typingPrompts = [
+          {
+            emoji: "🦥",
+            title: "Write about the Sloth! (Positive or Negative)",
+            hint: 'Example: "The sloth is the slowest animal." OR "The sloth is not fast."',
+            keywords: ["sloth", "slowest", "not", "fast"]
+          },
+          {
+            emoji: "🐆",
+            title: "Write about the Cheetah! (Positive or Negative)",
+            hint: 'Example: "The cheetah is the fastest." OR "The cheetah is not slow."',
+            keywords: ["cheetah", "fastest", "not", "slow"]
+          },
+          {
+            emoji: "🐳",
+            title: "Write about the Blue Whale! (Positive or Negative)",
+            hint: 'Example: "The blue whale is the biggest." OR "The whale is not small."',
+            keywords: ["whale", "biggest", "not", "small"]
+          },
+          {
+            emoji: "🦒",
+            title: "Write about the Giraffe! (Positive or Negative)",
+            hint: 'Example: "The giraffe is the tallest." OR "The giraffe is not short."',
+            keywords: ["giraffe", "tallest", "not", "short"]
+          },
+          {
+            emoji: "🐅",
+            title: "Write about the Tiger! (Positive or Negative)",
+            hint: 'Example: "It looks like a tiger." OR "The tiger is the scariest."',
+            keywords: ["tiger", "looks", "scariest", "biggest", "dangerous"]
+          }
+        ];
+        this.typingIdx = 0;
+      }
+
+      init() {
+        this.updateStats();
+      }
+
+      updateStats() {
+        document.getElementById('star-count').innerText = this.stars;
+        document.getElementById('candy-count').innerText = this.candies;
+
+        // Unlock Carnival if earned >= 15 stars
+        const btnCarnival = document.getElementById('btn-carnival-unlock');
+        if (this.stars >= 15) {
+          btnCarnival.disabled = false;
+          btnCarnival.classList.remove('opacity-50', 'cursor-not-allowed');
+          btnCarnival.classList.add('animate-pulse-slow');
+          btnCarnival.innerHTML = "🎉 Unlock Candy Carnival! 🍬";
+        }
+      }
+
+      addStar(num = 1) {
+        this.stars += num;
+        this.updateStats();
+      }
+
+      addCandy(num = 1) {
+        this.candies += num;
+        this.updateStats();
+      }
+
+      hideAllScreens() {
+        ['screen-menu', 'screen-quiz', 'screen-builder', 'screen-sensory', 'screen-typing', 'screen-carnival'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+        });
+      }
+
+      showMenu() {
+        this.hideAllScreens();
+        document.getElementById('screen-menu').classList.remove('hidden');
+      }
+
+      startSection(section) {
+        sound.playPop();
+        this.hideAllScreens();
+        if (section === 1) {
+          this.quizIdx = 0;
+          document.getElementById('screen-quiz').classList.remove('hidden');
+          this.renderQuiz();
+        } else if (section === 2) {
+          this.builderIdx = 0;
+          document.getElementById('screen-builder').classList.remove('hidden');
+          this.renderBuilder();
+        } else if (section === 3) {
+          document.getElementById('screen-sensory').classList.remove('hidden');
+          this.renderSensory();
+        } else if (section === 4) {
+          this.typingIdx = 0;
+          document.getElementById('screen-typing').classList.remove('hidden');
+          this.renderTyping();
+        }
+      }
+
+      /* ... existing quiz/builder/sensory methods ... */
+      renderQuiz() {
+        const qData = this.quizQuestions[this.quizIdx];
+        document.getElementById('quiz-progress').innerText = `Question ${this.quizIdx + 1} / ${this.quizQuestions.length}`;
+        document.getElementById('quiz-question').innerText = qData.q;
+        document.getElementById('quiz-feedback').innerHTML = '';
+
+        const optsContainer = document.getElementById('quiz-options');
+        optsContainer.innerHTML = '';
+
+        qData.opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = "bounce-hover bg-amber-100 hover:bg-amber-200 text-amber-900 font-fun text-xl sm:text-2xl py-6 px-4 rounded-3xl border-b-4 border-amber-300 shadow transition flex items-center justify-center";
+          btn.innerText = opt.label;
+          btn.onclick = () => this.handleQuizAnswer(opt.correct, btn);
+          optsContainer.appendChild(btn);
+        });
+      }
+
+      handleQuizAnswer(isCorrect, btn) {
+        const feedback = document.getElementById('quiz-feedback');
+        if (isCorrect) {
+          sound.playSuccess();
+          btn.classList.add('bg-emerald-400', 'text-white');
+          feedback.innerHTML = `<span class="text-emerald-600">🌟 Great Job! +1 Star!</span>`;
+          this.addStar(1);
+          confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+
+          setTimeout(() => {
+            this.quizIdx++;
+            if (this.quizIdx < this.quizQuestions.length) {
+              this.renderQuiz();
+            } else {
+              feedback.innerHTML = `<span class="text-emerald-600 font-fun text-xl">🎉 Quiz Complete! Return to menu!</span>`;
+              setTimeout(() => this.showMenu(), 1500);
+            }
+          }, 1200);
+        } else {
+          sound.playWrong();
+          btn.classList.add('animate-shake', 'bg-red-200');
+          feedback.innerHTML = `<span class="text-red-500">Try again, little explorer! 🤔</span>`;
+        }
+      }
+
+      /* --- SECTION 4: TYPE & CREATE --- */
+      renderTyping() {
+        const tData = this.typingPrompts[this.typingIdx];
+        document.getElementById('typing-progress').innerText = `Sentence ${this.typingIdx + 1} / ${this.typingPrompts.length}`;
+        document.getElementById('typing-prompt-emoji').innerText = tData.emoji;
+        document.getElementById('typing-prompt-title').innerText = tData.title;
+        document.getElementById('typing-prompt-hint').innerText = tData.hint;
+        document.getElementById('typing-input').value = '';
+        document.getElementById('typing-feedback').innerHTML = '';
+      }
+
+      checkTypingSentence() {
+        const val = document.getElementById('typing-input').value.trim().toLowerCase();
+        const feedback = document.getElementById('typing-feedback');
+
+        if (val.length < 5) {
+          sound.playWrong();
+          feedback.innerHTML = `<span class="text-amber-600">Please write a complete sentence! ✍️</span>`;
+          return;
+        }
+
+        const tData = this.typingPrompts[this.typingIdx];
+        // Check if input contains at least one relevant keyword or valid structure
+        const hasKeyword = tData.keywords.some(kw => val.includes(kw));
+
+        if (hasKeyword) {
+          sound.playSuccess();
+          this.addStar(1);
+          this.addCandy(1);
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+          feedback.innerHTML = `<span class="text-emerald-600 font-fun text-xl">🌟 Fantastic Writing! +1 Star +1 Candy!</span>`;
+
+          setTimeout(() => {
+            this.typingIdx++;
+            if (this.typingIdx < this.typingPrompts.length) {
+              this.renderTyping();
+            } else {
+              feedback.innerHTML = `<span class="text-emerald-600 font-fun text-xl">🎉 Writing Challenge Complete!</span>`;
+              setTimeout(() => this.showMenu(), 1500);
+            }
+          }, 1500);
+        } else {
+          sound.playWrong();
+          feedback.innerHTML = `<span class="text-red-500">Good effort! Check the hint and try using animal adjectives/superlatives!</span>`;
+        }
+      }
+    }
+
+    // Initialize App
+    const app = new App();
+    window.onload = () => app.init();
+  </script>
+</body>
+</html>
